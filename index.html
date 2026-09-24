@@ -203,8 +203,7 @@
             appendMessage(text, 'yera');
             messageInput.value = '';
 
-            // TODO: 파이썬 백엔드 주소로 연결 (http://localhost:5000/api/chat)
-            /*
+            // 진짜 룬(백엔드)과 통신하는 부분
             try {
                 const response = await fetch('http://localhost:5000/api/chat', {
                     method: 'POST',
@@ -216,21 +215,4 @@
             } catch (error) {
                 appendMessage("앗, 지금 민우가 서버 켜는 걸 깜빡했나 봐요!", 'rune');
             }
-            */
-            
-            // 임시 응답 (서버 연결 전)
-            setTimeout(() => {
-                appendMessage("백엔드 서버와 연결되면 제가 진짜로 대답할 수 있어요!", 'rune');
-            }, 1000);
         }
-
-        function appendMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            messageDiv.textContent = text;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-    </script>
-</body>
-</html>
