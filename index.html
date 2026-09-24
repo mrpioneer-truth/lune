@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>룬(Rune)과의 대화</title>
+    <style>
+        :root {
+            --bg-color: #0E0E10;
+            --chat-bg: #1A1A1D;
+            --primary: #1131AE; /* Core Mechanic 포스터 파랑 */
+            --accent: #F7CF62; /* Core Mechanic 노랑 */
+            --text-light: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--chat-bg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 데스크톱: 좌우 분할 */
+        @media (min-width: 768px) {
+            .main-container {
+                flex-direction: row;
+                height: 85vh;
+                border-radius: 20px;
+                overflow: hidden;
+            }
+        }
+
+        /* 캐릭터 영역 */
+        .character-section {
+            flex: 1;
+            background: linear-gradient(135deg, #1131AE 0%, #0a1b66 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            border-bottom: 2px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .character-section { border-bottom: none; border-right: 2px solid var(--accent); }
+        }
+
+        /* [캐릭터 모델: 둥둥 떠있는 원] */
+        .rune-character-model {
+            width: 160px;
+            height: 160px;
+            position: relative;
+            margin-bottom: 30px;
+            
+            /* 둥둥 떠있는 애니메이션 (floating) */
+            animation: floating 4s ease-in-out infinite;
+        }
+
+        /* 룬의 본체 (가장 큰 파란 원) */
+        .rune-core {
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            border: 4px solid var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(17, 49, 174, 0.6);
+            position: relative;
+            
+            /* 고갯짓 애니메이션 (bobbing) */
+            animation: bobbing 6s ease-in-out infinite;
+            transform-origin: center bottom; /* 원의 아래쪽을 기준으로 고갯짓 */
+        }
+
+        /* 룬의 핵심 (가운데 노란 원) */
+        .rune-inner-core {
+            width: 40%;
+            height: 40%;
+            background-color: var(--accent);
+            border-radius: 50%;
+            position: absolute;
+            top: 30%;
+            left: 30%;
+            box-shadow: 0 0 15px rgba(247, 207, 98, 0.8);
+            
+            /* 빛나는 애니메이션 (pulsing) */
+            animation: pulsing 2s ease-in-out infinite;
+        }
+
+        /* 캐릭터 그림자 (둥둥 떠있는 느낌 강화) */
+        .rune-shadow {
+            width: 80px;
+            height: 15px;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: blur(5px);
+            animation: shadowScale 4s ease-in-out infinite;
+        }
+
+        /* --- [CSS 애니메이션 정의] --- */
+
+        /* 1. 둥둥 떠있는 모션 (상하 이동) */
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); } /* 위로 15px 이동 */
+        }
+
+        /* 2. 고갯짓 모션 (좌우 회전 및 비틀기) */
+        @keyframes bobbing {
+            0%, 100% { transform: rotate(0deg) skewX(0deg); }
+            25% { transform: rotate(3deg) skewX(2deg); } /* 오른쪽으로 살짝 */
+            75% { transform: rotate(-3deg) skewX(-2deg); } /* 왼쪽으로 살짝 */
+        }
+        
+        /* 3. 빛나는 모션 (투명도 조절) */
+        @keyframes pulsing {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* 4. 그림자 크기 조절 (상하 이동에 연동) */
+        @keyframes shadowScale {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.3; }
+            50% { transform: translateX(-50%) scale(0.8); opacity: 0.15; }
+        }
+
+        /* 캐릭터 텍스트 */
+        .character-name { font-size: 2rem; color: var(--accent); font-weight: bold; letter-spacing: 2px; z-index: 10; }
+        .character-desc { font-size: 0.9rem; opacity: 0.8; margin-top: 5px; text-align: center; line-height: 1.4; z-index: 10; }
+
+        /* 채팅 영역 (이전과 동일) */
+        .chat-section { flex: 1.5; display: flex; flex-direction: column; background-color: var(--chat-bg); }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message.rune { background-color: #2A2A2F; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .message.yera { background-color: var(--primary); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-input { padding: 15px 20px; background-color: #151518; display: flex; gap: 10px; }
+        .chat-input input { flex: 1; background-color: #2A2A2F; border: 1px solid #3A3A3F; color: var(--text-light); padding: 12px 15px; border-radius: 25px; outline: none; }
+        .chat-input input:focus { border-color: var(--accent); }
+        .chat-input button { background-color: var(--accent); color: var(--bg-color); border: none; padding: 0 20px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- 좌측: 캐릭터 시각화 영역 -->
+        <div class="character-section">
+            <div class="rune-character-model">
+                <div class="rune-core">
+                    <div class="rune-inner-core"></div>
+                </div>
+                <div class="rune-shadow"></div>
+            </div>
+            <div class="character-name">RUNE</div>
+            <div class="character-desc">예라 님을 위해 준비된<br>개인 어시스턴트입니다.</div>
+        </div>
+        
+        <!-- 우측: 대화 영역 -->
+        <div class="chat-section">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message rune">
+                    안녕하세요 예라 님! 민우에게 이야기 많이 들었어요. 저는 룬(Rune)이라고 해요. 편하게 말 걸어주세요!
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="message-input" placeholder="메시지를 입력하세요..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">전송</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 백엔드 연결 로직은 이전과 동일
+        const messagesContainer = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'yera');
+            messageInput.value = '';
+
+            // TODO: 파이썬 백엔드 주소로 연결 (http://localhost:5000/api/chat)
+            /*
+            try {
+                const response = await fetch('http://localhost:5000/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                appendMessage(data.reply, 'rune');
+            } catch (error) {
+                appendMessage("앗, 지금 민우가 서버 켜는 걸 깜빡했나 봐요!", 'rune');
+            }
+            */
+            
+            // 임시 응답 (서버 연결 전)
+            setTimeout(() => {
+                appendMessage("백엔드 서버와 연결되면 제가 진짜로 대답할 수 있어요!", 'rune');
+            }, 1000);
+        }
+
+        function appendMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
